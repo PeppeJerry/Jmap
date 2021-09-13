@@ -1,4 +1,4 @@
-package com.thesis.jmap.database;
+package com.thesis.jmap.localdb;
 
 import androidx.room.Dao;
 import androidx.room.Insert;

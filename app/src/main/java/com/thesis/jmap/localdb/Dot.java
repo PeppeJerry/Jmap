@@ -1,9 +1,9 @@
-package com.thesis.jmap.database;
+package com.thesis.jmap.localdb;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 
-// Come se fosse un database SQL, questa è la tabella/classe
+// Come se fosse un database SQL, la @Entity rappresenta la tabella con le rispettive informazioni
 @Entity(tableName="dots", primaryKeys = "id")
 public class Dot {
 
@@ -55,10 +55,6 @@ public class Dot {
     }
 
     // Metodi e construct per il LAST_DOT
-
-    public Dot(){
-        this.model="LAST_DOT";
-    }
     public void setid(int id){
         this.id=id;
     }

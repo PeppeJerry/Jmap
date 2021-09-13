@@ -50,7 +50,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tv_lon" />
 
     <TextView
-        android:id="@+id/alt"
+        android:id="@+id/lat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
@@ -67,10 +67,10 @@
         android:layout_marginTop="4dp"
         android:text="-"
         app:layout_constraintStart_toEndOf="@+id/tv_lon"
-        app:layout_constraintTop_toBottomOf="@+id/alt" />
+        app:layout_constraintTop_toBottomOf="@+id/lat" />
 
     <TextView
-        android:id="@+id/lon2"
+        android:id="@+id/alt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
@@ -80,17 +80,18 @@
         app:layout_constraintTop_toBottomOf="@+id/lon" />
 
     <TextView
-        android:id="@+id/lon3"
+        android:id="@+id/address"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
         android:text="-"
+        android:textSize="10sp"
         app:layout_constraintStart_toEndOf="@+id/tv_address"
-        app:layout_constraintTop_toBottomOf="@+id/lon2" />
+        app:layout_constraintTop_toBottomOf="@+id/alt" />
 
     <Switch
-        android:id="@+id/location_status"
+        android:id="@+id/sw_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -120,13 +121,13 @@
         android:textSize="20dp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/location_status" />
+        app:layout_constraintTop_toBottomOf="@+id/sw_location" />
 
     <TextView
         android:id="@+id/tv_x"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="20dp"
         android:layout_marginTop="4dp"
         android:text="X:"
         app:layout_constraintStart_toStartOf="parent"
@@ -136,7 +137,7 @@
         android:id="@+id/tv_y"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="20dp"
         android:layout_marginTop="4dp"
         android:text="Y:"
         app:layout_constraintStart_toStartOf="parent"
@@ -146,11 +147,21 @@
         android:id="@+id/tv_z"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="20dp"
         android:layout_marginTop="4dp"
         android:text="Z:"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_y" />
+
+    <TextView
+        android:id="@+id/tv_avg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:text="M:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_z" />
 
     <TextView
         android:id="@+id/z"
@@ -161,6 +172,16 @@
         android:text="-"
         app:layout_constraintStart_toEndOf="@+id/tv_z"
         app:layout_constraintTop_toBottomOf="@+id/y" />
+
+    <TextView
+        android:id="@+id/m"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        android:text="-"
+        app:layout_constraintStart_toEndOf="@+id/tv_avg"
+        app:layout_constraintTop_toBottomOf="@+id/z" />
 
     <TextView
         android:id="@+id/y"
@@ -182,14 +203,4 @@
         app:layout_constraintStart_toEndOf="@+id/tv_x"
         app:layout_constraintTop_toBottomOf="@+id/tv_accelerometer" />
 
-    <Switch
-        android:id="@+id/accelerometer_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="4dp"
-        android:minHeight="48dp"
-        android:text="Accelerometer"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_z" />
 </androidx.constraintlayout.widget.ConstraintLayout>

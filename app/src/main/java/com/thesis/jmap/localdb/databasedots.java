@@ -1,13 +1,10 @@
-package com.thesis.jmap.database;
+package com.thesis.jmap.localdb;
 
 import android.content.Context;
 
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 // Il database viene creato con una tabella con la stessa struttura di Dot.class
 // Sarebbe possibile aggiungere più tabelle creando più java.class come è stata creata la classe (Dot.java)
@@ -16,7 +13,7 @@ import java.util.concurrent.Executors;
 public abstract class databasedots extends RoomDatabase {
     private static final String DB_NAME = "organized_dots";
 
-    // Prima di restituire l'istanza del db vengono fatti abbastanza controlli che non ritorni un valore nullo
+    // Prima di restituire l'istanza del db vengono fatti abbastanza controlli affinché non ritorni un valore nullo
     // 1. Se il database non esiste viene creato e poi viene restituita l'istanza
     // 2. Se il database esiste viene restituita direttamente l'istanza
 
