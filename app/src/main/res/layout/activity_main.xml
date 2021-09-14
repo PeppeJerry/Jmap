@@ -21,7 +21,7 @@
 
     <TextView
         android:id="@+id/tv_lat"
-        android:layout_width="70dp"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
@@ -31,7 +31,7 @@
 
     <TextView
         android:id="@+id/tv_lon"
-        android:layout_width="70dp"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
@@ -41,7 +41,7 @@
 
     <TextView
         android:id="@+id/tv_alt"
-        android:layout_width="70dp"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
@@ -103,7 +103,7 @@
 
     <TextView
         android:id="@+id/tv_address"
-        android:layout_width="70dp"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
