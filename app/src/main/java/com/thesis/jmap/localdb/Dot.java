@@ -5,15 +5,14 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-
+import java.util.Date;
 import java.util.UUID;
 
 // Come se fosse un database SQL, la @Entity rappresenta la tabella con le rispettive informazioni
-@Entity(tableName="dots", primaryKeys = {"id","model","uuid"})
+@Entity(tableName="dots", primaryKeys = {"time","model","uuid"})
 public class Dot {
 
     public Dot(double x,double y,double z,double lat,double lon,double alt, int id){
-        this.id = id;
         this.x = x;
         this.y = y;
         this.z = z;
@@ -21,6 +20,7 @@ public class Dot {
         this.lon = lon;
         this.alt = alt;
         this.model = Build.MODEL;
+        this.time = new Date().getTime();
         uuid = activeUuid;
     }
 
@@ -28,7 +28,7 @@ public class Dot {
         switch(type){
             case "LAST_STATE":
                 uuid = "LAST_STATE";
-                id = -1;
+                time = -1;
                 model = Build.MODEL;
                 break;
             default:
@@ -40,13 +40,12 @@ public class Dot {
     // Sarebbe possibile utilizzare @Primarykey se per un attributo
     // Per chiavi composte invece in @Entity -> primarykey = 'col1,col2,...'
 
-    // ID - A mo degli ACK dei pacchetti TCP - UDP
-    // Ogni punto viene numerato così sai sia il punto successivo che il precedente
-    @ColumnInfo(name = "id")
-    public int id;
+    // Tempo di acquisizione del dato tradotto in secondi
+    @ColumnInfo(name = "time")
+    public long time;
 
-    // ID - a mo di di Port dei pacchetti TCP - UDP
-    // Ogni flusso di punti viene identificato da un ID creato al momento
+    // uuid - a mo delle porte dei pacchetti TCP - UDP
+    // Ogni flusso di punti viene identificato da un UUID specifico
     @ColumnInfo(name = "uuid")
     @NonNull
     public String uuid;
@@ -74,14 +73,10 @@ public class Dot {
     @ColumnInfo(name = "alt")
     public double alt;
 
+
     // get veloce di tutte le informazioni
     public String all(){
-        return x+" "+y+" "+z+" "+lat+" "+lon+" "+alt+" "+model+" "+id;
-    }
-
-    // Metodi e construct per il LAST_DOT
-    public void setid(int id){
-        this.id=id;
+        return x+" "+y+" "+z+" "+lat+" "+lon+" "+alt+" "+model+" "+time;
     }
 
     // Metodo per restituire un ID casuale del flusso
