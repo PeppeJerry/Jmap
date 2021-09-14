@@ -12,7 +12,7 @@ import java.util.UUID;
 @Entity(tableName="dots", primaryKeys = {"time","model","uuid"})
 public class Dot {
 
-    public Dot(double x,double y,double z,double lat,double lon,double alt, int id){
+    public Dot(double x,double y,double z,double lat,double lon,double alt){
         this.x = x;
         this.y = y;
         this.z = z;
