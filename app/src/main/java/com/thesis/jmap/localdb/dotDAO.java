@@ -13,11 +13,18 @@ public interface dotDAO {
     // Inserisci un punto
     // Se il nuovo punto ha un id (Primary Key) ripetuta -> Non lo aggiunge
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    void add_dot(Dot dot);
+    void addDot(Dot dot);
 
-    // Prende tutti i punti nel db
-    @Query("SELECT * FROM dots")
-    List<Dot> getall();
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void forceAddDot(Dot dot);
+
+    // Prende tutti i punti nel db ;
+    @Query("SELECT * FROM dots WHERE model!='LAST_STATE'")
+    List<Dot> getQueuedots();
+
+    // Prende un massimo di punti nel db
+    @Query("SELECT * FROM dots WHERE model!='LAST_STATE' LIMIT :limit")
+    List<Dot> getQueuedotsLimited(int limit);
 
     // Nuke them all
     @Query("DELETE FROM dots")
@@ -33,16 +40,9 @@ public interface dotDAO {
     @Query("SELECT COUNT(*) FROM dots")
     List<Integer> num_rows();
 
-    // Il punto avente (model = 'LAST_DOT') è un punto particolare:
-    // 1. Indica l'ultimo ID inviato al database SQL remoto
-    // 2. Tutti i punti avente (ID<LAST_DOT.ID) sono eliminabili (Possibile ottibilizzazione)
-
-    // Utilizzato per la verifica dell'esistenza del LAST_DOT
-    @Query("SELECT COUNT(*) FROM dots WHERE model ='LAST_DOT'")
-    List<Integer> getlastdot();
-
-    // Aggiorna l'ultimo ID trasmesso in remoto nel LAST_DOT
-    @Query("UPDATE dots SET 'id'=:id")
-    void update_lastdot(int id);
+    // Utilizzato per la verifica dell'esistenza di determinati punti (LAST_STATE)
+    // LAST_STATE -> Punto che indica l'ultimo indirizzo dello Switch nella UI
+    @Query("SELECT x FROM dots WHERE model ='LAST_STATE'")
+    List<Double> getSwitchState();
 
 }
