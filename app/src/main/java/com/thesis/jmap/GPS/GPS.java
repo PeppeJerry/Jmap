@@ -17,7 +17,7 @@ public class GPS {
     LocationCallback locationCallBack;
     LocationRequest locationRequest;
     FusedLocationProviderClient fusedLocationProviderClient;
-    public long time = 100;    // Senza risparmio energetico
+    public long time = 500;    // Senza risparmio energetico
     private double lat=0, lon=0, alt=0;
     private Context c;
     private Activity a;
