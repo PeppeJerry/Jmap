@@ -1,2 +1,2 @@
 # Jmap
-Using the data of a GPS and an accelerometer inside a common smartphone, the application anonymously sends those information to a SQL web server, waiting to be studied by a program that should search possible correlations with the street structure.
+Using data from a GPS and an accelerometer in a smartphone, the application anonymously sends this information to a SQL web server, waiting to be studied by a program that should look for possible correlations with the structure of the road.
