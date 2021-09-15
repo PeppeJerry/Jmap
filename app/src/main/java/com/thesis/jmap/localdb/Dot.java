@@ -89,5 +89,19 @@ public class Dot {
         activeUuid = UUID.randomUUID().toString();
     }
 
+    // Restituisce una variabile di tipo "String" contenente gli attributi dell'oggetto con sintassi JSON
+    public String toJSON(){
+        return "{"
+                +"\"time\":"+time+","
+                +"\"uuid\":\""+uuid+"\","
+                +"\"model\":\""+model+"\","
+                +"\"x\":"+x+","
+                +"\"y\":"+y+","
+                +"\"z\":"+z+","
+                +"\"lat\":"+lat+","
+                +"\"lon\":"+lon+","
+                +"\"alt\":"+alt
+                + "}";
+    }
 
 }
