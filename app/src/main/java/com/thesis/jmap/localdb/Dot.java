@@ -5,6 +5,8 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Insert;
+
 import java.util.Date;
 import java.util.UUID;
 
@@ -12,30 +14,33 @@ import java.util.UUID;
 @Entity(tableName="dots", primaryKeys = {"time","model","uuid"})
 public class Dot {
 
-    public Dot(double x,double y,double z,double lat,double lon,double alt){
+    public Dot(double x,double y,double z,double lat,double lon,double alt,String uuid,long time,String model){
+        if(activeUuid == null)
+            setupActiveUuid();
+
         this.x = x;
         this.y = y;
         this.z = z;
+
         this.lat = lat;
         this.lon = lon;
         this.alt = alt;
-        this.model = Build.MODEL;
-        this.time = new Date().getTime();
-        uuid = activeUuid;
-    }
 
-    public Dot(String type){
-        switch(type){
-            case "LAST_STATE":
-                uuid = "LAST_STATE";
-                time = -1;
-                model = Build.MODEL;
-                break;
-            default:
-                uuid = "USELESS_DOT";
-        }
-    }
+        if(model == null)
+            this.model = Build.MODEL;
+        else
+            this.model = model;
 
+        if(time <= 0)
+            this.time = new Date().getTime();
+        else
+            this.time = time;
+
+        if(uuid == null)
+            this.uuid = activeUuid;
+        else
+            this.uuid = uuid;
+    }
     // Con @ColumnInfo(name = 'name') identifico le colonne della tabella
     // Sarebbe possibile utilizzare @Primarykey se per un attributo
     // Per chiavi composte invece in @Entity -> primarykey = 'col1,col2,...'
