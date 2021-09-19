@@ -5,8 +5,6 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.Insert;
-
 import java.util.Date;
 import java.util.UUID;
 
@@ -78,7 +76,6 @@ public class Dot {
     @ColumnInfo(name = "alt")
     public double alt;
 
-
     // get veloce di tutte le informazioni
     public String all(){
         return x+" "+y+" "+z+" "+lat+" "+lon+" "+alt+" "+model+" "+time;
@@ -87,20 +84,5 @@ public class Dot {
     // Metodo per restituire un ID casuale del flusso
     public static void setupActiveUuid(){
         activeUuid = UUID.randomUUID().toString();
-    }
-
-    // Restituisce una variabile di tipo "String" contenente gli attributi dell'oggetto con sintassi JSON
-    public String toJSON(){
-        return "{"
-                +"\"time\":"+time+","
-                +"\"uuid\":\""+uuid+"\","
-                +"\"model\":\""+model+"\","
-                +"\"x\":"+x+","
-                +"\"y\":"+y+","
-                +"\"z\":"+z+","
-                +"\"lat\":"+lat+","
-                +"\"lon\":"+lon+","
-                +"\"alt\":"+alt
-                + "}";
     }
 }
