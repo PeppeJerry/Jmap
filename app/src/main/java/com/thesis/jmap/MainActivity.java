@@ -17,24 +17,18 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.google.gson.Gson;
+
 import com.thesis.jmap.GPS.GPS;
 import com.thesis.jmap.GPS.IGPS;
 import com.thesis.jmap.localdb.Dot;
 import com.thesis.jmap.localdb.Settings;
 import com.thesis.jmap.localdb.databasedots;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import com.thesis.jmap.remotedb.sendData;
+
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
@@ -43,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     // 1. Localizzazione
     private static final int PERMISSION_LOCATION = 69;
+    private static final int DECIMAL_GPS_PRECISION = 6;
     IGPS igps;
     TextView tv_address, tv_lat, tv_lon, tv_alt;
     Switch sw_location;
@@ -52,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     String address;
 
     // 2. Sensore - Accelerometro
+    private static final int DECIMAL_ACCELEROMETER_PRECISION = 9;
     SensorManager sensorManager;
     Sensor accelerometer;
     TextView tv_x,tv_y,tv_z,tv_m;
@@ -62,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     // 4. Variabili globali varie
     Handler h = new Handler();
+    sendData syncData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,8 +82,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         setupDatabase();
         setupAccelerometer();
         setupGPS();
-        //database.dotDao().nuke();
-        //for(int i=0;i<3;i++) database.dotDao().forceAddDot(new Dot(0,0,0,0,0,0,null,0,null));
+
+        syncData = new sendData(database);
+
+        // Inizializzo il nuovo thread per la sincronizzazione dei dati
+        Thread ThreadSyncData = new Thread(syncData);
         sw_location.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,11 +97,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
         });
         updateLocalDB.run();
-        eseguimi.start();
+        ThreadSyncData.start();
     }// Fine onCreate
 
     private void setupDatabase() {
-        database = Room.databaseBuilder(this, databasedots.class, "Jmap")
+        database = Room.databaseBuilder(MainActivity.this, databasedots.class, "Jmap")
                 .allowMainThreadQueries()
                 .build();
         if(database.SettingsDao().check("Location") == 0)
@@ -113,10 +113,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
 
-        x = sensorEvent.values[0];
-        y = sensorEvent.values[1];
-        z = sensorEvent.values[2];
-        m = Math.pow(x*x+y*y+z*z,0.5);
+
+        x = round(sensorEvent.values[0],DECIMAL_ACCELEROMETER_PRECISION);
+        y = round(sensorEvent.values[1],DECIMAL_ACCELEROMETER_PRECISION);
+        z = round(sensorEvent.values[2],DECIMAL_ACCELEROMETER_PRECISION);
+        m = round(Math.pow(x*x+y*y+z*z,0.5),DECIMAL_ACCELEROMETER_PRECISION);
 
         tv_x.setText(x+"");
         tv_y.setText(y+"");
@@ -138,9 +139,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             gps.Location_OFF();
             return;
         }
-        lat = location.getLatitude();
-        lon = location.getLongitude();
-        alt = location.getAltitude();
+        lat = round(location.getLatitude(),DECIMAL_GPS_PRECISION);
+        lon = round(location.getLongitude(),DECIMAL_GPS_PRECISION);
+        alt = round(location.getAltitude(),DECIMAL_GPS_PRECISION);
         address = "-";
         geocoder = new Geocoder(this);
         try {
@@ -233,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         @Override
         public void run() {
             if (sw_location.isChecked()) {
-                database.dotDao().addDot(new Dot(x, y, z, lat, lon, alt, null, 0, null));
+                database.dotDao().addDot(new Dot(x, y, z, lat, lon, alt, null, 0));
                 if (database.dotDao().num_rows()%300 == 0)
                     Toast.makeText(MainActivity.this, database.dotDao().num_rows()+"", Toast.LENGTH_SHORT).show();
             }
@@ -241,62 +242,24 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     };
 
-    Thread eseguimi = new Thread(new Runnable(){
-        @Override
-        public void run() {
-            HttpURLConnection con = null;
-            try {
-                Gson gson = new Gson();
-                JSONObject data = new JSONObject();
-                List<Dot> dots = database.dotDao().all();
-
-                JSONArray j = new JSONArray(gson.toJson(dots));
-                String uuid = j.getJSONObject(0).getString("uuid");
-                String model = j.getJSONObject(0).getString("model");
-                String a = gson.toJson(dots);
-
-                a = a.replace("\"model\":\""+model+"\",", "");
-                a = a.replace("\"uuid\":\""+uuid+"\",", "");
-                a = a.replace("\"model\":\""+model+"\"", "");
-                a = a.replace("\"uuid\":\""+uuid+"\"", "");
-
-                j = new JSONArray(a);
-                data.put("uuid", uuid);
-                data.put("model", model);
-                data.put("dots", j);
-
-                URL url = new URL("https://jmap.altervista.org/index.php");
-                con = (HttpURLConnection) url.openConnection();
-                con.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-                con.setRequestMethod("POST");
-                con.setDoOutput(true);
-                con.setDoInput(true);
-                con.connect();
-
-                DataOutputStream localDataOutputStream = new DataOutputStream(con.getOutputStream());
-                localDataOutputStream.writeBytes(data.toString());
-                localDataOutputStream.flush();
-                localDataOutputStream.close();
-
-                if(con.getResponseCode()!=200)
-                    return;
-
-                BufferedReader rd = new BufferedReader(new InputStreamReader(
-                        con.getInputStream()));
-                String line;
-                String r = "";
-                while ((line = rd.readLine()) != null) {
-                    r+=line+"\n";
-                }
-                Log.i("data", r);
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                if (con != null) {
-                    con.disconnect();
-                }
-            }
-        }
-    });
+    public static double round(double value, int places) {
+        if(places <0)
+            return value;
+        long factor = (long) Math.pow(10, places);
+        value = value * factor;
+        long tmp = Math.round(value);
+        return (double) tmp / factor;
+    }
 
 }
+    /*Runnable test = new Runnable() {
+        @Override
+        public void run() {
+            for(int i=0;i<5;i++) database.dotDao().forceAddDot(new Dot(0,0,0,0,0,0,null,0));
+            Dot.setupActiveUuid();
+            if(i%100==0)
+                Toast.makeText(MainActivity.this, i+"", Toast.LENGTH_SHORT).show();
+            i++;
+            h.postDelayed(test,50);
+        }
+    };*/
