@@ -9,10 +9,12 @@ import java.util.Date;
 import java.util.UUID;
 
 // Come se fosse un database SQL, la @Entity rappresenta la tabella con le rispettive informazioni
-@Entity(tableName="dots", primaryKeys = {"time","model","uuid"})
+@Entity(tableName="dots", primaryKeys = {"time","uuid"})
 public class Dot {
 
-    public Dot(double x,double y,double z,double lat,double lon,double alt,String uuid,long time,String model){
+    public static String activeUuid;
+
+    public Dot(double x,double y,double z,double lat,double lon,double alt,String uuid,long time){
         if(activeUuid == null)
             setupActiveUuid();
 
@@ -23,11 +25,6 @@ public class Dot {
         this.lat = lat;
         this.lon = lon;
         this.alt = alt;
-
-        if(model == null)
-            this.model = Build.MODEL;
-        else
-            this.model = model;
 
         if(time <= 0)
             this.time = new Date().getTime();
@@ -53,13 +50,6 @@ public class Dot {
     @NonNull
     public String uuid;
 
-    public static String activeUuid;
-
-    // Dati dispositivo
-    @ColumnInfo(name = "model")
-    @NonNull
-    public String model;
-
     // Dati accelerometro
     @ColumnInfo(name = "x")
     public double x;
@@ -78,7 +68,7 @@ public class Dot {
 
     // get veloce di tutte le informazioni
     public String all(){
-        return x+" "+y+" "+z+" "+lat+" "+lon+" "+alt+" "+model+" "+time;
+        return x+" "+y+" "+z+" "+lat+" "+lon+" "+alt+" "+Build.MODEL+" "+time;
     }
 
     // Metodo per restituire un ID casuale del flusso
