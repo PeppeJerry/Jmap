@@ -194,6 +194,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             if(sw_location.isChecked()) {
                 gps = new GPS(MainActivity.this, MainActivity.this, igps);
+                Dot.setupActiveUuid();
                 gps.Location_ON();
                 database.SettingsDao().setting(new Settings("Location",true));
             }
