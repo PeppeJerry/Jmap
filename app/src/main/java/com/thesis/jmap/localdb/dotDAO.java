@@ -29,7 +29,7 @@ public interface dotDAO {
 
     // Prende il valore di uuid del punto più anziano
     @Query("SELECT uuid FROM dots ORDER BY time LIMIT 1")
-    String getUuidDot();
+    String getLatestUuidDot();
 
     // Rimuove un sub-set di punti ~ Nuke them all
     @Query("DELETE FROM dots WHERE uuid = :uuid AND time<=:time")
@@ -43,9 +43,11 @@ public interface dotDAO {
     @Query("SELECT COUNT(*) FROM dots")
     Integer checkLastState();
 
+    // Rimuove tutti i punti presumibilmente già inviati al db remoto
+    @Query("DELETE FROM dots WHERE uuid = :uuid AND time<=:time")
+    void syncData(String uuid, long time);
+
+    // Reset delle righe nel database ~ Nuke them all
     @Query("DELETE FROM dots")
     void nuke();
-
-    @Query("SELECT * FROM dots")
-    List<Dot> all();
 }
