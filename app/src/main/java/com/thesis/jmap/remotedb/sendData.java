@@ -27,8 +27,7 @@ public class sendData implements Runnable {
     private Handler h = new Handler();
 
     // Tempi per il recupero delle informazioni
-    public static final int SEND_DOTS_MINUTE = 2;
-    public static final int MAX_RANDOM_MS = 5;
+    public static final int SEND_DOTS_MINUTES = 2;
 
     public sendData(databasedots database) {
         this.database = database;
@@ -39,7 +38,7 @@ public class sendData implements Runnable {
         while(true) {
             syncStoredData.run();
             try {
-                Thread.sleep(2000);
+                Thread.sleep(1000*60*SEND_DOTS_MINUTES);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
