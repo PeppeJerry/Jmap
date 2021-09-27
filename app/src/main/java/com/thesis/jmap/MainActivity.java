@@ -134,17 +134,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 i++;
             }
             if(i==1000) {
-                time = new Date().getTime()-time;
-                i=0;
-                insertDots indots = new insertDots(database,dots,time,Tr);
-                Thread indotsThread = new Thread(indots);
-                indotsThread.start();
+                sendToThread();
             }
         }
         else{
             if(i!=0){
-                i=0;
-                // Thread Start();
+                sendToThread();
             }
         }
 
@@ -267,6 +262,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         value = value * factor;
         long tmp = Math.round(value);
         return (double) tmp / factor;
+    }
+
+    public void sendToThread(){
+        time = new Date().getTime()-time;
+        i=0;
+        insertDots indots = new insertDots(database,dots,time,Tr);
+        Thread indotsThread = new Thread(indots);
+        indotsThread.start();
     }
 
 }
