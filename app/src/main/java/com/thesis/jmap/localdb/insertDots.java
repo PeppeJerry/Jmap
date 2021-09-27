@@ -25,15 +25,15 @@ public class insertDots implements Runnable {
     public void run() {
         int size = dots.size() - dots.size()%RANGE;
         for(int i=0; i<size/10;i++){
-            double avg = avg1(dots.subList(RANGE*i,(i+1)*RANGE));
-            double dev = dev2(dots.subList(RANGE*i,(i+1)*RANGE),avg);
-            long interval = interval3(dots.subList(RANGE*i,(i+1)*RANGE));
+            double avg = avg(dots.subList(RANGE*i,(i+1)*RANGE));
+            double dev = dev(dots.subList(RANGE*i,(i+1)*RANGE),avg);
+            long interval = interval(dots.subList(RANGE*i,(i+1)*RANGE));
             dots.get((RANGE-1)*(i+1)).completeDot(avg,dev,interval);
             database.dotDao().addDot(dots.get((RANGE-1)*(i+1)));
         }
     }
 
-    public double avg1(List<Dot> subDots){
+    public double avg(List<Dot> subDots){
         double avg = 0;
         for(int i=0;i<subDots.size();i++){
             avg += subDots.get(i).getM();
@@ -41,16 +41,16 @@ public class insertDots implements Runnable {
         return avg/subDots.size();
     }
 
-    public double dev2(List<Dot> subDots, double avg){
-        double dev2 = 0;
+    public double dev(List<Dot> subDots, double avg){
+        double dev = 0;
         for(int i=0;i<subDots.size();i++){
             double temp = subDots.get(i).getM()-avg;
-            dev2 += temp*temp;
+            dev += temp*temp;
         }
-        return dev2/subDots.size();
+        return Math.pow(dev/subDots.size(),0.5);
     }
 
-    public long interval3(List<Dot> subDots){
-        return subDots.get(0).time - subDots.get(subDots.size()-1).time;
+    public long interval(List<Dot> subDots){
+        return subDots.get(subDots.size()-1).time - subDots.get(0).time;
     }
 }
