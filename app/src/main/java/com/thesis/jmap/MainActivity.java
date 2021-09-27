@@ -16,7 +16,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
+
 import android.view.View;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -27,8 +27,11 @@ import com.thesis.jmap.GPS.IGPS;
 import com.thesis.jmap.localdb.Dot;
 import com.thesis.jmap.localdb.Settings;
 import com.thesis.jmap.localdb.databasedots;
+import com.thesis.jmap.localdb.insertDots;
 import com.thesis.jmap.remotedb.sendData;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
@@ -37,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     // 1. Localizzazione
     private static final int PERMISSION_LOCATION = 69;
-    private static final int DECIMAL_GPS_PRECISION = 6;
+    private static final int DECIMAL_GPS_PRECISION = -1;
     IGPS igps;
     TextView tv_address, tv_lat, tv_lon, tv_alt;
     Switch sw_location;
@@ -47,7 +50,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     String address;
 
     // 2. Sensore - Accelerometro
-    private static final int DECIMAL_ACCELEROMETER_PRECISION = 9;
+    private static final int DECIMAL_ACCELEROMETER_PRECISION = -1;
+    private static final int ACCELEROMETER_PERIOD_MS = 10;
     SensorManager sensorManager;
     Sensor accelerometer;
     TextView tv_x,tv_y,tv_z,tv_m;
@@ -55,9 +59,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     // 3. Database - Room
     databasedots database;
+    int i=0;
+    long time;
+    List<Dot> dots;
 
     // 4. Variabili globali varie
-    Handler h = new Handler();
     sendData syncData;
 
     @Override
@@ -96,7 +102,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 }
             }
         });
-        updateLocalDB.run();
         ThreadSyncData.start();
     }// Fine onCreate
 
@@ -113,11 +118,34 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
 
-
         x = round(sensorEvent.values[0],DECIMAL_ACCELEROMETER_PRECISION);
         y = round(sensorEvent.values[1],DECIMAL_ACCELEROMETER_PRECISION);
         z = round(sensorEvent.values[2],DECIMAL_ACCELEROMETER_PRECISION);
-        m = round(Math.pow(x*x+y*y+z*z,0.5),DECIMAL_ACCELEROMETER_PRECISION);
+        m = x*x+y*y+z*z;
+
+        if(sw_location.isChecked()){
+            if(i==0) {
+                time = new Date().getTime();
+                dots = new ArrayList<Dot>();
+            }
+            if(alt!=0.0 || lon!= 0.0 || alt!=0.0) {
+                dots.add(new Dot(x, y, z, lat, lon, alt));
+                i++;
+            }
+            if(i==1000) {
+                time = new Date().getTime()-time;
+                i=0;
+                insertDots indots = new insertDots(database,dots,time);
+                Thread indotsThread = new Thread(indots);
+                indotsThread.start();
+            }
+        }
+        else{
+            if(i!=0){
+                i=0;
+                // Thread Start();
+            }
+        }
 
         tv_x.setText(x+"");
         tv_y.setText(y+"");
@@ -131,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void setupAccelerometer(){
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-        sensorManager.registerListener(MainActivity.this, accelerometer, SensorManager.SENSOR_DELAY_FASTEST);
+        sensorManager.registerListener(MainActivity.this, accelerometer, 1000*ACCELEROMETER_PERIOD_MS);
     };
 
     public void GpsUpdateUI(Location location){
@@ -231,18 +259,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         return false;
     }
 
-    Runnable updateLocalDB = new Runnable() {
-        @Override
-        public void run() {
-            if (sw_location.isChecked()) {
-                database.dotDao().addDot(new Dot(x, y, z, lat, lon, alt, null, 0));
-                if (database.dotDao().num_rows()%300 == 0)
-                    Toast.makeText(MainActivity.this, database.dotDao().num_rows()+"", Toast.LENGTH_SHORT).show();
-            }
-            h.postDelayed(updateLocalDB,50);
-        }
-    };
-
     public static double round(double value, int places) {
         if(places <0)
             return value;
@@ -253,14 +269,3 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
 }
-    /*Runnable test = new Runnable() {
-        @Override
-        public void run() {
-            for(int i=0;i<5;i++) database.dotDao().forceAddDot(new Dot(0,0,0,0,0,0,null,0));
-            Dot.setupActiveUuid();
-            if(i%100==0)
-                Toast.makeText(MainActivity.this, i+"", Toast.LENGTH_SHORT).show();
-            i++;
-            h.postDelayed(test,50);
-        }
-    };*/
