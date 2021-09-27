@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     int i=0;
     long time;
     List<Dot> dots;
+    public static int Tr = 100;
 
     // 4. Variabili globali varie
     sendData syncData;
@@ -135,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             if(i==1000) {
                 time = new Date().getTime()-time;
                 i=0;
-                insertDots indots = new insertDots(database,dots,time);
+                insertDots indots = new insertDots(database,dots,time,Tr);
                 Thread indotsThread = new Thread(indots);
                 indotsThread.start();
             }

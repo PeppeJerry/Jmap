@@ -1,5 +1,7 @@
 package com.thesis.jmap.localdb;
 
+import com.thesis.jmap.MainActivity;
+
 import java.util.List;
 
 public class insertDots implements Runnable {
@@ -7,12 +9,16 @@ public class insertDots implements Runnable {
     private databasedots database;
     private List<Dot> dots;
     private long time;
-    private static final int RANGE = 10;
+    private static int RANGE;
+    private static int Tr;
+    private static int Tc = 10;
 
-    public insertDots(databasedots database, List<Dot> dots, long time){
+    public insertDots(databasedots database, List<Dot> dots, long time,int Tr){
         this.database = database;
         this.dots = dots;
         this.time = time;
+        this.Tr = Tr;
+        RANGE = (int)(Tr/Tc);
     }
 
     @Override
