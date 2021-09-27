@@ -5,6 +5,8 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
+
 import java.util.Date;
 import java.util.UUID;
 
@@ -14,7 +16,28 @@ public class Dot {
 
     public static String activeUuid;
 
-    public Dot(double x,double y,double z,double lat,double lon,double alt,String uuid,long time){
+    // Costruttore per il database Room
+    public Dot(double x,double y,double z,double lat,double lon,double alt,String uuid,long time, double avg, double dev, long interval){
+
+        this.x = x;
+        this.y = y;
+        this.z = z;
+
+        this.lat = lat;
+        this.lon = lon;
+        this.alt = alt;
+
+        this.time = time;
+        this.uuid = uuid;
+
+        this.avg = avg;
+        this.dev = dev;
+        this.interval = interval;
+    }
+
+    // Costruttore per l'aggiunta dei campioni
+    @Ignore
+    public Dot(double x,double y,double z,double lat,double lon,double alt){
         if(activeUuid == null)
             setupActiveUuid();
 
@@ -26,15 +49,8 @@ public class Dot {
         this.lon = lon;
         this.alt = alt;
 
-        if(time <= 0)
-            this.time = new Date().getTime();
-        else
-            this.time = time;
-
-        if(uuid == null)
-            this.uuid = activeUuid;
-        else
-            this.uuid = uuid;
+        this.time = new Date().getTime();
+        this.uuid = activeUuid;
     }
     // Con @ColumnInfo(name = 'name') identifico le colonne della tabella
     // Sarebbe possibile utilizzare @Primarykey se per un attributo
@@ -66,9 +82,21 @@ public class Dot {
     @ColumnInfo(name = "alt")
     public double alt;
 
-    // get veloce di tutte le informazioni
-    public String all(){
-        return x+" "+y+" "+z+" "+lat+" "+lon+" "+alt+" "+Build.MODEL+" "+time;
+    @ColumnInfo(name = "avg")
+    public double avg;
+    @ColumnInfo(name = "dev")
+    public double dev;
+    @ColumnInfo(name = "interval")
+    public long interval;
+
+    public double getM(){
+        return Math.pow(x*x+y*y*z*z,0.5);
+    }
+
+    public void completeDot(double avg, double dev, long interval){
+        this.avg = avg;
+        this.dev = dev;
+        this.interval = interval;
     }
 
     // Metodo per restituire un ID casuale del flusso
