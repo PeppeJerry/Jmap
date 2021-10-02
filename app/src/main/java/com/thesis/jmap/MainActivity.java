@@ -60,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     // 3. Database - Room
     databasedots database;
     int i=0;
-    long time;
     List<Dot> dots;
     public static int Tr = 100;
 
@@ -126,7 +125,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         if(sw_location.isChecked()){
             if(i==0) {
-                time = new Date().getTime();
                 dots = new ArrayList<Dot>();
             }
             if(alt!=0.0 || lon!= 0.0 || alt!=0.0) {
@@ -190,10 +188,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     GpsUpdateUI(location);
             }
         };
-        if(database.SettingsDao().status("Location").state){
-            sw_location.toggle();
-            swLocationCheck();
-        }
     }
 
     @Override
@@ -265,9 +259,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     public void sendToThread(){
-        time = new Date().getTime()-time;
         i=0;
-        insertDots indots = new insertDots(database,dots,time,Tr);
+        insertDots indots = new insertDots(database,dots,Tr);
         Thread indotsThread = new Thread(indots);
         indotsThread.start();
     }
