@@ -54,8 +54,9 @@ public class insertDots implements Runnable {
 
     public double[] dev(List<Dot> subDots, double avg[]){
         double devx=0,devy=0,devz=0;
+        double temp;
         for(int i=0;i<subDots.size();i++){
-            double temp;
+
             temp = subDots.get(i).x-avg[0];
             devx += temp*temp;
 
@@ -66,9 +67,9 @@ public class insertDots implements Runnable {
             devz += temp*temp;
         }
         double[] dev = new double[3];
-        dev[0] = devx/subDots.size();
-        dev[1] = devy/subDots.size();
-        dev[2] = devz/subDots.size();
+        dev[0] = Math.pow(devx/subDots.size(),0.5);
+        dev[1] = Math.pow(devy/subDots.size(),0.5);
+        dev[2] = Math.pow(devz/subDots.size(),0.5);
         return dev;
 
     }
