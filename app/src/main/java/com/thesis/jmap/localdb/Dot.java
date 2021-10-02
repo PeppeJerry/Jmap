@@ -17,11 +17,14 @@ public class Dot {
     public static String activeUuid;
 
     // Costruttore per il database Room
-    public Dot(double x,double y,double z,double lat,double lon,double alt,String uuid,long time, double avg, double dev, long interval){
+    public Dot(double x,double y,double z,double lat,double lon,double alt,String uuid,long time, double devx, double devy, double devz,int interval){
 
         this.x = x;
+        this.devx = devx;
         this.y = y;
+        this.devy = devy;
         this.z = z;
+        this.devz = devz;
 
         this.lat = lat;
         this.lon = lon;
@@ -30,8 +33,6 @@ public class Dot {
         this.time = time;
         this.uuid = uuid;
 
-        this.avg = avg;
-        this.dev = dev;
         this.interval = interval;
     }
 
@@ -69,10 +70,16 @@ public class Dot {
     // Dati accelerometro
     @ColumnInfo(name = "x")
     public double x;
+    @ColumnInfo(name = "devx")
+    public double devx;
     @ColumnInfo(name = "y")
     public double y;
+    @ColumnInfo(name = "devy")
+    public double devy;
     @ColumnInfo(name = "z")
     public double z;
+    @ColumnInfo(name = "devz")
+    public double devz;
 
     // Dati GPS
     @ColumnInfo(name = "lat")
@@ -82,22 +89,8 @@ public class Dot {
     @ColumnInfo(name = "alt")
     public double alt;
 
-    @ColumnInfo(name = "avg")
-    public double avg;
-    @ColumnInfo(name = "dev")
-    public double dev;
     @ColumnInfo(name = "interval")
-    public long interval;
-
-    public double getM(){
-        return Math.pow(x*x+y*y*z*z,0.5);
-    }
-
-    public void completeDot(double avg, double dev, long interval){
-        this.avg = avg;
-        this.dev = dev;
-        this.interval = interval;
-    }
+    public int interval;
 
     // Metodo per restituire un ID casuale del flusso
     public static void setupActiveUuid(){
