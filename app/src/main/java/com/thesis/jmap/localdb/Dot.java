@@ -17,7 +17,7 @@ public class Dot {
     public static String activeUuid;
 
     // Costruttore per il database Room
-    public Dot(double x,double y,double z,double lat,double lon,double alt,String uuid,long time, double devx, double devy, double devz,int interval){
+    public Dot(double x,double y,double z,double lat,double lon,double alt,String uuid,long time, double devx, double devy, double devz,int interval, double strength){
 
         this.x = x;
         this.devx = devx;
@@ -34,6 +34,7 @@ public class Dot {
         this.uuid = uuid;
 
         this.interval = interval;
+        this.strength = strength;
     }
 
     // Costruttore per l'aggiunta dei campioni
@@ -91,6 +92,8 @@ public class Dot {
 
     @ColumnInfo(name = "interval")
     public int interval;
+    @ColumnInfo(name = "strength")
+    public double strength;
 
     // Metodo per restituire un ID casuale del flusso
     public static void setupActiveUuid(){
